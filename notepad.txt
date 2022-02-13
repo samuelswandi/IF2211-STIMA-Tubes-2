@@ -30,7 +30,7 @@ prioritas pake:
 
 
 -----TWEET
-Penggunaan tweet dibagi 2 prioritas : 1. posisi lawan 2. speed lawan
+Penggunaan tweet dibagi 2 prioritas : 
 
 
 ------EMP // conditional
@@ -38,34 +38,65 @@ Penggunaan tweet dibagi 2 prioritas : 1. posisi lawan 2. speed lawan
 
 // LIST OF 
 
+SET state dia blm milih dl?
+
 https://github.com/EntelectChallenge/2020-Overdrive/blob/develop/game-engine/game-rules.md
 
+Note    :    kalo plan a sm b liat yg efektif, bs di implement bs jd ngga juga
 ----------------------------- POWER UPS -----------------------------
+1. fix 2. musuh di dpan kita satu lane use_emp, 2. boost 3. lizard 4. oil 5. tweet
+!!!!!!!!!!!!! HARUS INGET CEK PUNYA ATO NGGA DULU !!!!!!!!!!!!!
 USE_BOOST       : 
     - lagi gapake boost
-    - Kalo ada wall ga dipake
-    - Maksimal mud yang bisa dilewatin maksimal jadi speed state 3
+    - Kalo ada wall dan cybertruck ga dipake
+    - Maksimal mud+oil yang bisa dilewatin 15 step kedepanadi speed state 3
     - speednya <= 3 langsung pake
-    - kalo 200 blocks trkhr, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN TEMBOK
-
+    - kalo 200 blocks trkhr or 50 round terakhir, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN HARUS GADA TEMBOK
 USE_OIL         :
     - pastiin musuh di blkng kita
     - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4), 
-    - 
-USE_TWEET       :
-
+    - cek di kanan kiri WALL ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+    - cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+    - sebelum loncatin obstacle pake lizard, taro oil
+USE_TWEET  _ _  :
+    PLAN UTAMA:  (FIX)
+    - check speed musuh kalo pas max langsung cyber truck
+    PLAN A:
+    - musuh di blkng kt
+    - taro di depan dinding dan gada mud
+    PLAN B: 
+    - musuh di blkng kt
+    - taro di sebelah dinding dam gada mud 
 USE_LIZARD      : 
-    - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD
+    - ada truck
+    - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD    
+    - dia lg max speed, tapi di depannya ada >=3 mud+oil 
+    - dia ada kemungkinan buat state speed-3 dri state speed sekarang, cek use boost dulu baru kalo gada use lizard
     - kalo dia ada chance sampe speednya jadi 
-    - PIKIRIN PAKE LIZARD KALO ADA MUD YANG ngestack
-
-
+    - PIKIRIN PAKE LIZARD KALO ADA MUD YANG ngestack di 1 lane
 USE_EMP         : 
-    - Kalo selane, pake (1)
+    - Kalo selane, pake 
 FIX             : 
-    - damage >= 5 MUST 
+    - damage >= 5 MUST
 
 ----------------------------- MOVEMENT -----------------------------
+!!!!!!!!!!!!! HARUS INGET CEK kalo DI LANE 1, 4 DIA GABOLEH KE KIRI/KANAN (+++BIKIN FUNGSI TAMBAHAN ISCORNER())!!!!!!!!!!!!!
+!!!!!!!!!!!!! MENDING KENA MUD(-3) DRPD OIL(-4) !!!!!!!!!!!!! 
+SBELUM AWAL MOVEMENT CARI DULU SELALU BUAT LANE SKRNG, KIRI, KANAN pake loop 4x15 kali ke depan: 
+1. lane-1 ITUNG -1 INGET BUAT PINDAH!!!
+2. lane kt 
+3. lane+1 ITUNG -1 INGET BUAT PINDAH!!!
+    tiap lane kt itung 15 kedepan yang paling untung yg mana, (liat buat mud, oil, truck, wall, dll both score and damage)
+    PRIORITAS: YG SPEEDNYA BS KENCENG BARU DAMAGENYA KECIL, BARU SCORE
+    either dia bakal ACC, TURN_LEFT ato TURN_RIGHT< else NOTHING (INGETTT KALO DIA TURN_LEFT SM TURN_RIGHT ITUNG -1 juga)
+
+NOTHING         : (taro else)
+    - boost dan speed max 
 ACCELERATE      :
     - kalo dia gada boost
-
+DECELERATE      :
+    -  BELOM KEBAYANG KAPAN MAKENYA
+TURN_LEFT       :
+    - 
+TURN_RIGHT
+    -   
