@@ -2,6 +2,7 @@ package za.co.entelect.challenge;
 
 import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
+import za.co.entelect.challenge.enums.PowerUps;
 import za.co.entelect.challenge.enums.Terrain;
 
 import java.util.*;
@@ -17,7 +18,17 @@ public class Bot {
     private GameState gameState;
     private Car opponent;
     private Car myCar;
+    
+    private final static Command ACCELERATE = new AccelerateCommand();
+    private final static Command LIZARD = new LizardCommand();
+    private final static Command OIL = new OilCommand();
+    private final static Command BOOST = new BoostCommand();
+    private final static Command EMP = new EmpCommand();
     private final static Command FIX = new FixCommand();
+    
+    private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
+    private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
+
 
     public Bot(Random random, GameState gameState) {
         this.random = random;
@@ -39,6 +50,15 @@ public class Bot {
             return new ChangeLaneCommand(directionList.get(i));
         }
         return new AccelerateCommand();
+    }
+
+    private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
+        for (PowerUps powerUp: available) {
+            if (powerUp.equals(powerUpToCheck)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

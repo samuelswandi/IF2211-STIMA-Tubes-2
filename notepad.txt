@@ -1,0 +1,71 @@
+1. if - then -. k
+
+
+
+damage -> power up -> speed -> score
+
+// DAMAGE
+
+if(myCar.damage == 5) {
+    return FIX;
+}
+if(myCar.speed <= 3) {
+    return ACCELERATE;
+}
+
+if(myCar.damage >= 5) {
+    return FIX;
+}
+
+
+KALAU PUNYA
+-----OIL
+////////////////////////// Misalnya kita ngestack oil, apply 4 lanenya
+
+------LIZARD
+prioritas pake:
+    1. ada WALL
+    2. ada mud/oil saat speed kita diatas sekian...
+    3. 
+
+
+-----TWEET
+Penggunaan tweet dibagi 2 prioritas : 1. posisi lawan 2. speed lawan
+
+
+------EMP // conditional
+1. kalo selane, pake
+
+// LIST OF 
+
+https://github.com/EntelectChallenge/2020-Overdrive/blob/develop/game-engine/game-rules.md
+
+----------------------------- POWER UPS -----------------------------
+USE_BOOST       : 
+    - lagi gapake boost
+    - Kalo ada wall ga dipake
+    - Maksimal mud yang bisa dilewatin maksimal jadi speed state 3
+    - speednya <= 3 langsung pake
+    - kalo 200 blocks trkhr, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN TEMBOK
+
+USE_OIL         :
+    - pastiin musuh di blkng kita
+    - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4), 
+    - 
+USE_TWEET       :
+
+USE_LIZARD      : 
+    - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD
+    - kalo dia ada chance sampe speednya jadi 
+    - PIKIRIN PAKE LIZARD KALO ADA MUD YANG ngestack
+
+
+USE_EMP         : 
+    - Kalo selane, pake (1)
+FIX             : 
+    - damage >= 5 MUST 
+
+----------------------------- MOVEMENT -----------------------------
+ACCELERATE      :
+    - kalo dia gada boost
+

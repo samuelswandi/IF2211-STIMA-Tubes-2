@@ -42,6 +42,10 @@ public class Bot {
         List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block, gameState);
         List<Object> nextBlocks = blocks.subList(0,1);
 
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups)) {
+            return OIL;
+        }
+
         //Fix first if too damaged to move
         if(myCar.damage == 5) {
             return FIX;
