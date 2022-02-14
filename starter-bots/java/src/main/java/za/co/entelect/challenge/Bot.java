@@ -4,6 +4,7 @@ import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
 import za.co.entelect.challenge.enums.PowerUps;
 import za.co.entelect.challenge.enums.Terrain;
+import za.co.entelect.challenge.strategies.*;
 
 import java.util.*;
 
@@ -42,14 +43,42 @@ public class Bot {
 
     public Command run() {
         List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
+
         if (myCar.damage >= 5) {
             return new FixCommand();
         }
+
+        if (shouldCarUseEMP()) {
+            return EMP;
+        }
+
+        if (shouldCarUseBoost()) {
+            return BOOST;
+        }
+
+
         if (blocks.contains(Terrain.MUD)) {
             int i = random.nextInt(directionList.size());
             return new ChangeLaneCommand(directionList.get(i));
         }
         return new AccelerateCommand();
+    }
+
+
+    private boolean isOpponentOnTheSameLane() {
+        return myCar.position.lane == opponent.position.lane;
+    }
+
+    private boolean isWallInFront() {
+        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
+    }
+
+    private boolean shouldCarUseBoost() {
+        return hasPowerUp(PowerUps.BOOST, myCar.powerups) && !isWallInFront();
+    }
+
+    private boolean shouldCarUseEMP() {
+        return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
     }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
@@ -61,10 +90,6 @@ public class Bot {
         return false;
     }
 
-    /**
-     * Returns map of blocks and the objects in the for the current lanes, returns the amount of blocks that can be
-     * traversed at max speed.
-     **/
     private List<Object> getBlocksInFront(int lane, int block) {
         List<Lane[]> map = gameState.lanes;
         List<Object> blocks = new ArrayList<>();

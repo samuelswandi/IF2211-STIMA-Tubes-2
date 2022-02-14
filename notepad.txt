@@ -49,9 +49,9 @@ Note    :    kalo plan a sm b liat yg efektif, bs di implement bs jd ngga juga
 USE_BOOST       : 
     - lagi gapake boost
     - Kalo ada wall dan cybertruck ga dipake
-    - Maksimal mud+oil yang bisa dilewatin 15 step kedepanadi speed state 3
-    - speednya <= 3 langsung pake
-    - kalo 200 blocks trkhr or 50 round terakhir, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN HARUS GADA TEMBOK
+        - Maksimal mud+oil yang bisa dilewatin 15 step kedepanadi speed state 3
+        - speednya <= 3 langsung pake
+        - kalo 200 blocks trkhr or 50 round terakhir, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN HARUS GADA TEMBOK
 USE_OIL         :
     - pastiin musuh di blkng kita
     - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4), 
@@ -80,7 +80,7 @@ FIX             :
     - damage >= 5 MUST
 
 ----------------------------- MOVEMENT -----------------------------
-!!!!!!!!!!!!! HARUS INGET CEK kalo DI LANE 1, 4 DIA GABOLEH KE KIRI/KANAN (+++BIKIN FUNGSI TAMBAHAN ISCORNER())!!!!!!!!!!!!!
+!!!!!!!!!!!!! HARUS ING ET CEK kalo DI LANE 1, 4 DIA GABOLEH KE KIRI/KANAN (+++BIKIN FUNGSI TAMBAHAN ISCORNER())!!!!!!!!!!!!!
 !!!!!!!!!!!!! MENDING KENA MUD(-3) DRPD OIL(-4) !!!!!!!!!!!!! 
 SBELUM AWAL MOVEMENT CARI DULU SELALU BUAT LANE SKRNG, KIRI, KANAN pake loop 4x15 kali ke depan: 
 1. lane-1 ITUNG -1 INGET BUAT PINDAH!!!
