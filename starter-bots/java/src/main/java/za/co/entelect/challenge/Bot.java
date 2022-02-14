@@ -19,14 +19,14 @@ public class Bot {
     private GameState gameState;
     private Car opponent;
     private Car myCar;
-    
+
     private final static Command ACCELERATE = new AccelerateCommand();
     private final static Command LIZARD = new LizardCommand();
     private final static Command OIL = new OilCommand();
     private final static Command BOOST = new BoostCommand();
     private final static Command EMP = new EmpCommand();
     private final static Command FIX = new FixCommand();
-    
+
     private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
     private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
 
@@ -64,17 +64,40 @@ public class Bot {
         return new AccelerateCommand();
     }
 
-
-    private boolean isOpponentOnTheSameLane() {
-        return myCar.position.lane == opponent.position.lane;
-    }
-
     private boolean isWallInFront() {
         return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
     }
+    
+    private int countMudInFront() {
+        int count = 0;
+        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
+        for (Object block : blocks) {
+            if (block.equals(Terrain.MUD)) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     private boolean shouldCarUseBoost() {
-        return hasPowerUp(PowerUps.BOOST, myCar.powerups) && !isWallInFront();
+        if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
+            if (!myCar.boosting && !isWallInFront()) {
+                if (gameState.maxRounds - gameState.currentRound <= 50) {
+                    return true;
+                }
+                if (countMudInFront() <= 3) {
+                    return true;
+                }
+                if (myCar.speed <= 3) {
+                    return true;
+                }
+            }
+        } 
+        return false;
+    }
+
+    private boolean isOpponentOnTheSameLane() {
+        return myCar.position.lane == opponent.position.lane;
     }
 
     private boolean shouldCarUseEMP() {
@@ -82,7 +105,7 @@ public class Bot {
     }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
-        for (PowerUps powerUp: available) {
+        for (PowerUps powerUp : available) {
             if (powerUp.equals(powerUpToCheck)) {
                 return true;
             }
