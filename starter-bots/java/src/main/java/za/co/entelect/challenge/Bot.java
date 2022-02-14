@@ -56,6 +56,10 @@ public class Bot {
             return BOOST;
         }
 
+        if (shouldCarUseOil()) {
+            return OIL;
+        }
+
 
         if (blocks.contains(Terrain.MUD)) {
             int i = random.nextInt(directionList.size());
@@ -66,6 +70,14 @@ public class Bot {
 
     private boolean isWallInFront() {
         return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
+    }
+
+    private boolean isOpponentOnTheSameLane() {
+        return myCar.position.lane == opponent.position.lane;
+    }
+
+    private boolean isOpponentInFront() {
+        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(opponent);
     }
     
     private int countMudInFront() {
@@ -88,20 +100,23 @@ public class Bot {
                 if (countMudInFront() <= 3) {
                     return true;
                 }
-                if (myCar.speed <= 3) {
-                    return true;
-                }
+
+                return myCar.speed <= 3;
             }
         } 
         return false;
     }
 
-    private boolean isOpponentOnTheSameLane() {
-        return myCar.position.lane == opponent.position.lane;
-    }
 
     private boolean shouldCarUseEMP() {
         return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
+    }
+
+    private boolean shouldCarUseOil() {
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && isOpponentOnTheSameLane() && !isOpponentInFront()) {
+
+        }
+        return false;
     }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
