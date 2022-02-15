@@ -9,6 +9,7 @@ import za.co.entelect.challenge.strategies.*;
 import java.util.*;
 
 import static java.lang.Math.max;
+import static java.lang.Math.nextAfter;
 
 public class Bot {
 
@@ -56,12 +57,13 @@ public class Bot {
             return BOOST;
         }
 
-        // if (shouldCarUseOil()) {
-        //     return OIL;
-        // }
+         if (shouldCarUseOil()) {
+             return OIL;
+         }
 
-        if (shouldCarUseTweet()) {
-        }
+//        if (shouldCarUseTweet()) {
+//            return new TweetCommand();
+//        }
 
 
         if (blocks.contains(Terrain.MUD)) {
@@ -127,14 +129,22 @@ public class Bot {
         return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
     }
 
-    // private boolean shouldCarUseOil() {
-    //     if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront()) {
-    //         if (isOpponentOnTheSameLane()):
-    //             return true
-    //         // if (isWallInFront() )
-    //     }
-    //     return false;
-    // }
+    private boolean shouldCarUseOil() {
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront()) {
+            if (isOpponentOnTheSameLane()) {
+                if (myCar.position.lane == 1) {
+                    List<Object> blocksInFront = getBlocksInFront(2, myCar.position.block);
+                    return blocksInFront.contains(Terrain.MUD) || blocksInFront.contains(Terrain.WALL) || blocksInFront.contains(Terrain.OIL_SPILL);
+                }
+                if (myCar.position.lane == 4) {
+                    List<Object> blocksInFront = getBlocksInFront(3, myCar.position.block);
+                    return blocksInFront.contains(Terrain.MUD) || blocksInFront.contains(Terrain.WALL) || blocksInFront.contains(Terrain.OIL_SPILL);
+                }
+            }
+            return false;
+        }
+        return false;
+    }
 
     private boolean shouldCarUseTweet() {
         if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {

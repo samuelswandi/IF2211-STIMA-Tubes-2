@@ -53,13 +53,13 @@ USE_BOOST       :
 [X]        - speednya <= 3 langsung pake
 [X]        - kalo 200 blocks trkhr or 50 round terakhir, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN HARUS GADA TEMBOK
 USE_OIL         :
-[X]   - pastiin musuh di blkng kita
-        - kalo di lane 1 ato 4,
-          - kalo di lane 2 atau 3, tanem
-          - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4),
-        - cek di kanan kiri WALL ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
-        - cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
-        - sebelum loncatin obstacle pake lizard, taro oil
+[X]     - pastiin musuh di blkng kita
+[X]         - kalo di lane 1 ato 4,
+[X]             - kalo di lane 2 atau 3, tanem
+[X]             - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4),
+        - [Not Feasible] cek di kanan kiri WALL ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+        - [Not Feasible] cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+        - [Not Feasible] sebelum loncatin obstacle pake lizard, taro oil
 USE_TWEET  _ _  :
     PLAN UTAMA:  (FIX)
     - check speed musuh kalo pas max langsung cyber truck
