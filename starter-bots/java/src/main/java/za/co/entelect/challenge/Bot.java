@@ -4,22 +4,15 @@ import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
 import za.co.entelect.challenge.enums.PowerUps;
 import za.co.entelect.challenge.enums.Terrain;
-import za.co.entelect.challenge.strategies.*;
 
 import java.util.*;
 
 import static java.lang.Math.max;
-import static java.lang.Math.nextAfter;
 
 public class Bot {
 
     private static final int maxSpeed = 9;
-    private List<Integer> directionList = new ArrayList<>();
-
-    private Random random;
-    private GameState gameState;
-    private Car opponent;
-    private Car myCar;
+    private List<Command> directionList = new ArrayList<>();
 
     private final static Command ACCELERATE = new AccelerateCommand();
     private final static Command LIZARD = new LizardCommand();
@@ -32,32 +25,30 @@ public class Bot {
     private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
 
 
-    public Bot(Random random, GameState gameState) {
-        this.random = random;
-        this.gameState = gameState;
-        this.myCar = gameState.player;
-        this.opponent = gameState.opponent;
-
-        directionList.add(-1);
-        directionList.add(1);
+    public Bot() {
+        directionList.add(TURN_LEFT);
+        directionList.add(TURN_RIGHT);
     }
 
-    public Command run() {
+    public Command run(GameState gameState) {
+        Car myCar = gameState.player;
+        Car opponent = gameState.opponent;
+
         List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
 
         if (myCar.damage >= 5) {
             return new FixCommand();
         }
 
-        if (shouldCarUseEMP()) {
+        if (shouldCarUseEMP(gameState, myCar)) {
             return EMP;
         }
 
-        if (shouldCarUseBoost()) {
+        if (shouldCarUseBoost(gameState, myCar)) {
             return BOOST;
         }
 
-         if (shouldCarUseOil()) {
+         if (shouldCarUseOil(gameState, myCar)) {
              return OIL;
          }
 
@@ -65,31 +56,31 @@ public class Bot {
 //            return new TweetCommand();
 //        }
 
-        if (shouldCarUseLizard()) {
+        if (shouldCarUseLizard(gameState, myCar)) {
             return LIZARD;
         }
 
 
-        if (blocks.contains(Terrain.MUD)) {
-            int i = random.nextInt(directionList.size());
-            return new ChangeLaneCommand(directionList.get(i));
-        }
+//        if (blocks.contains(Terrain.MUD)) {
+//            int i = random.nextInt(directionList.size());
+//            return new ChangeLaneCommand(directionList.get(i));
+//        }
         return new AccelerateCommand();
     }
 
-    private boolean isOpponentOnTheSameLane() {
-        return myCar.position.lane == opponent.position.lane;
+    private boolean isOpponentOnTheSameLane(GameState gamestate, Car myCar) {
+        return myCar.position.lane == gamestate.opponent.position.lane;
     }
 
-    private boolean isOpponentInFront() {
-        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(opponent);
+    private boolean isOpponentInFront(GameState gamestate, Car myCar) {
+        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(gamestate.opponent);
     }
 
-    private boolean isWallInFront() {
+    private boolean isWallInFrontOf(Car myCar) {
         return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
     }
 
-    private int countMudInFront() {
+    private int countMudInFrontOf(Car myCar) {
         int count = 0;
         List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
         for (Object block : blocks) {
@@ -100,13 +91,13 @@ public class Bot {
         return count;
     }
 
-    private boolean shouldCarUseBoost() {
+    private boolean shouldCarUseBoost(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            if (!myCar.boosting && !isWallInFront()) {
+            if (!myCar.boosting && !isWallInFrontOf(myCar)) {
                 if (gameState.maxRounds - gameState.currentRound <= 50) {
                     return true;
                 }
-                if (countMudInFront() <= 3) {
+                if (countMudInFrontOf(myCar) <= 3) {
                     return true;
                 }
 
@@ -116,9 +107,9 @@ public class Bot {
         return false;
     }
 
-    private boolean shouldCarUseOil() {
-        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront()) {
-            if (isOpponentOnTheSameLane()) {
+    private boolean shouldCarUseOil(GameState gamestate, Car myCar) {
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront(gamestate, myCar)) {
+            if (isOpponentOnTheSameLane(gamestate, myCar)) {
                 if (myCar.position.lane == 1) {
                     List<Object> blocksInFront = getBlocksInFront(2, myCar.position.block);
                     return blocksInFront.contains(Terrain.MUD) || blocksInFront.contains(Terrain.WALL) || blocksInFront.contains(Terrain.OIL_SPILL);
@@ -133,27 +124,27 @@ public class Bot {
         return false;
     }
 
-    private boolean shouldCarUseTweet() {
+    private boolean shouldCarUseTweet(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {
-            return opponent.speed == 15;
+            return gameState.opponent.speed == 15;
         }
         return false;
     }
 
-    private boolean shouldCarUseLizard() {
+    private boolean shouldCarUseLizard(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
             if (myCar.speed == 15) {
-                return isWallInFront() || countMudInFront() >= 3;
+                return isWallInFrontOf(myCar) || countMudInFrontOf(myCar) >= 3;
             }
         }
         return false;
     }
 
-    private boolean shouldCarUseEMP() {
-        return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
+    private boolean shouldCarUseEMP(GameState gameState, Car myCar) {
+        return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane(gameState, myCar) && isOpponentInFront(gameState, myCar);
     }
 
-    private int getPreviousSpeedState(int currSpeed, int decreaseState) {
+    private int getPreviousSpeedState(Car myCar, int currSpeed, int decreaseState) {
         int minimum = 0;
         int state_1 = 3;
         int initial = 5;
@@ -205,7 +196,7 @@ public class Bot {
         return myCar.speed;
     }
 
-    private int countSpeedDecrement(List<Object> blocksInFront) {
+    private int countSpeedDecrement(Car myCar, List<Object> blocksInFront) {
         int speedMinus = 0;
         int mud = 0;
         int oil_spill = 0;
@@ -226,7 +217,7 @@ public class Bot {
             speedMinus += wall * (myCar.speed - 3);
             currSpeed = 3;
         }
-        speedMinus += (currSpeed - getPreviousSpeedState(currSpeed, oil_spill + mud));
+        speedMinus += (currSpeed - getPreviousSpeedState(myCar, currSpeed, oil_spill + mud));
         return speedMinus;
     }
 
@@ -280,16 +271,16 @@ public class Bot {
         return powerUp;
     }
 
-    private Position checkBestPosition() {
-        int speed;
-        int damage;
-        int score;
-        int powerups;
-        // BELOM DIBUAT CORNER CASENYA
-        List<Object> blocksInFront = getBlocksInFront(myCar.position.lane, myCar.position.block);
-        List<Object> blocksInLeft = getBlocksInFront(myCar.position.lane - 1, myCar.position.block);
-        List<Object> blocksInRight = getBlocksInFront(myCar.position.lane + 1, myCar.position.block);
-    }
+//    private Position checkBestPosition() {
+//        int speed;
+//        int damage;
+//        int score;
+//        int powerups;
+//        // BELOM DIBUAT CORNER CASENYA
+//        List<Object> blocksInFront = getBlocksInFront(myCar.position.lane, myCar.position.block);
+//        List<Object> blocksInLeft = getBlocksInFront(myCar.position.lane - 1, myCar.position.block);
+//        List<Object> blocksInRight = getBlocksInFront(myCar.position.lane + 1, myCar.position.block);
+//    }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
         for (PowerUps powerUp : available) {
