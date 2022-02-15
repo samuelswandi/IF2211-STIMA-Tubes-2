@@ -12,7 +12,7 @@ import static java.lang.Math.max;
 import java.security.SecureRandom;
 
 public class Bot {
-
+`
     private static final int maxSpeed = 9;
     private List<Command> directionList = new ArrayList<>();
 

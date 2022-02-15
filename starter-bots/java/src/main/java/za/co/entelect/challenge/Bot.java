@@ -34,10 +34,8 @@ public class Bot {
         Car myCar = gameState.player;
         Car opponent = gameState.opponent;
 
-        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
-
-        if (myCar.damage >= 5) {
-            return new FixCommand();
+        if (myCar.damage >= 3) {
+            return FIX;
         }
 
         if (shouldCarUseEMP(gameState, myCar)) {
@@ -52,37 +50,32 @@ public class Bot {
              return OIL;
          }
 
-//        if (shouldCarUseTweet()) {
-//            return new TweetCommand();
-//        }
+        if (shouldCarUseTweet(gameState, myCar)) {
+            return new TweetCommand(opponent.position.lane, opponent.position.block + opponent.speed);
+        }
 
         if (shouldCarUseLizard(gameState, myCar)) {
             return LIZARD;
         }
 
-
-//        if (blocks.contains(Terrain.MUD)) {
-//            int i = random.nextInt(directionList.size());
-//            return new ChangeLaneCommand(directionList.get(i));
-//        }
-        return new AccelerateCommand();
+        return ACCELERATE;
     }
 
-    private boolean isOpponentOnTheSameLane(GameState gamestate, Car myCar) {
-        return myCar.position.lane == gamestate.opponent.position.lane;
+    private boolean isOpponentOnTheSameLane(GameState gameState, Car myCar) {
+        return myCar.position.lane == gameState.opponent.position.lane;
     }
 
-    private boolean isOpponentInFront(GameState gamestate, Car myCar) {
-        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(gamestate.opponent);
+    private boolean isOpponentInFront(GameState gameState, Car myCar) {
+        return getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(gameState.opponent);
     }
 
-    private boolean isWallInFrontOf(Car myCar) {
-        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
+    private boolean isWallInFrontOf(GameState gameState, Car myCar) {
+        return getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
     }
 
-    private int countMudInFrontOf(Car myCar) {
+    private int countMudInFrontOf(GameState gameState, Car myCar) {
         int count = 0;
-        List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
+        List<Object> blocks = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block);
         for (Object block : blocks) {
             if (block.equals(Terrain.MUD)) {
                 count++;
@@ -93,11 +86,11 @@ public class Bot {
 
     private boolean shouldCarUseBoost(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            if (!myCar.boosting && !isWallInFrontOf(myCar)) {
+            if (!myCar.boosting && !isWallInFrontOf(gameState, myCar)) {
                 if (gameState.maxRounds - gameState.currentRound <= 50) {
                     return true;
                 }
-                if (countMudInFrontOf(myCar) <= 3) {
+                if (countMudInFrontOf(gameState, myCar) <= 3) {
                     return true;
                 }
 
@@ -107,15 +100,15 @@ public class Bot {
         return false;
     }
 
-    private boolean shouldCarUseOil(GameState gamestate, Car myCar) {
-        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront(gamestate, myCar)) {
-            if (isOpponentOnTheSameLane(gamestate, myCar)) {
+    private boolean shouldCarUseOil(GameState gameState, Car myCar) {
+        if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront(gameState, myCar)) {
+            if (isOpponentOnTheSameLane(gameState, myCar)) {
                 if (myCar.position.lane == 1) {
-                    List<Object> blocksInFront = getBlocksInFront(2, myCar.position.block);
+                    List<Object> blocksInFront = getBlocksInFront(gameState, 2, myCar.position.block);
                     return blocksInFront.contains(Terrain.MUD) || blocksInFront.contains(Terrain.WALL) || blocksInFront.contains(Terrain.OIL_SPILL);
                 }
                 if (myCar.position.lane == 4) {
-                    List<Object> blocksInFront = getBlocksInFront(3, myCar.position.block);
+                    List<Object> blocksInFront = getBlocksInFront(gameState, 3, myCar.position.block);
                     return blocksInFront.contains(Terrain.MUD) || blocksInFront.contains(Terrain.WALL) || blocksInFront.contains(Terrain.OIL_SPILL);
                 }
             }
@@ -134,7 +127,7 @@ public class Bot {
     private boolean shouldCarUseLizard(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
             if (myCar.speed == 15) {
-                return isWallInFrontOf(myCar) || countMudInFrontOf(myCar) >= 3;
+                return isWallInFrontOf(gameState, myCar) || countMudInFrontOf(gameState, myCar) >= 3;
             }
         }
         return false;
@@ -291,8 +284,8 @@ public class Bot {
         return false;
     }
 
-    private List<Object> getBlocksInFront(int lane, int block) {
-        List<Lane[]> map = gameState.lanes;
+    private List<Object> getBlocksInFront(GameState gamestate, int lane, int block) {
+        List<Lane[]> map = gamestate.lanes;
         List<Object> blocks = new ArrayList<>();
         int startBlock = map.get(0)[0].position.block;
 

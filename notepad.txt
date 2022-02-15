@@ -61,14 +61,14 @@ USE_OIL         :
 [NF]    - cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
 [NF]    - sebelum loncatin obstacle pake lizard, taro oil
 USE_TWEET  _ _  :
-    PLAN UTAMA:  (FIX)
-    - check speed musuh kalo pas max langsung cyber truck ??
-    PLAN A:
-    - musuh di blkng kt
-    - taro di depan dinding dan gada mud
-    PLAN B: 
-    - musuh di blkng kt
-    - taro di sebelah dinding dam gada mud 
+[X]     PLAN UTAMA:  (FIX)
+[X]     - check speed musuh kalo pas max langsung cyber truck ??
+[?]     PLAN A:
+[?]     - musuh di blkng kt
+[?]     - taro di depan dinding dan gada mud
+[?]     PLAN B:
+[?]     - musuh di blkng kt
+[?]     - taro di sebelah dinding dam gada mud
 USE_LIZARD      : 
 [NF]    - ada truck
 [X]     - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD
