@@ -60,7 +60,7 @@ public class Bot {
         //     return OIL;
         // }
 
-        if (shouldCarUseTweet()){
+        if (shouldCarUseTweet()) {
         }
 
 
@@ -94,7 +94,7 @@ public class Bot {
     private boolean isOpponentInFront() {
         return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(opponent);
     }
-    
+
     private int countMudInFront() {
         int count = 0;
         List<Object> blocks = getBlocksInFront(myCar.position.lane, myCar.position.block);
@@ -118,7 +118,7 @@ public class Bot {
 
                 return myCar.speed <= 3;
             }
-        } 
+        }
         return false;
     }
 
@@ -136,13 +136,149 @@ public class Bot {
     //     return false;
     // }
 
-    private boolean shouldCarUseTweet(){
+    private boolean shouldCarUseTweet() {
         if (hasPowerUp(PowerUps.TWEET, myCar.powerups)) {
-            if (opponent.speed == 15){
-                return true;
-            }
+            return opponent.speed == 15;
         }
         return false;
+    }
+
+    private int getPreviousSpeedState(int currSpeed, int decreaseState) {
+        int minimum = 0;
+        int state_1 = 3;
+        int initial = 5;
+        int state_2 = 6;
+        int state_3 = 8;
+        int max = 9;
+        int boost = 15;
+
+        int[] carSpeed = {minimum, state_1, initial, state_2, state_3, max, boost};
+        if (currSpeed == minimum) {
+            return carSpeed[0];
+        } else if (currSpeed == state_1) {
+            if (1 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[2 - decreaseState];
+            }
+        } else if (currSpeed == initial) {
+            if (2 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[2 - decreaseState];
+            }
+        } else if (currSpeed == state_2) {
+            if (2 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[3 - decreaseState];
+            }
+        } else if (currSpeed == state_3) {
+            if (2 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[4 - decreaseState];
+            }
+        } else if (currSpeed == max) {
+            if (2 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[5 - decreaseState];
+            }
+        } else if (currSpeed == boost) {
+            if (2 - decreaseState <= 0) {
+                return carSpeed[0];
+            } else {
+                return carSpeed[6 - decreaseState];
+            }
+        }
+        return myCar.speed;
+    }
+
+    private int countSpeedDecrement(List<Object> blocksInFront) {
+        int speedMinus = 0;
+        int mud = 0;
+        int oil_spill = 0;
+        int wall = 0;
+        int currSpeed = myCar.speed;
+        for (Object block : blocksInFront) {
+            if (block.equals(Terrain.MUD)) {
+                mud += 1;
+            } else if (block.equals(Terrain.OIL_SPILL)) {
+                oil_spill += 1;
+            } else if (block.equals(Terrain.WALL)) {
+                wall += 1;
+            } else {
+                speedMinus += 0;
+            }
+        }
+        if (wall > 0) {
+            speedMinus += wall * (myCar.speed - 3);
+            currSpeed = 3;
+        }
+        speedMinus += (currSpeed - getPreviousSpeedState(currSpeed, oil_spill + mud));
+        return speedMinus;
+    }
+
+    private int countDamageIncrement(List<Object> blocksInFront) {
+        int damage = 0;
+        for (Object block : blocksInFront) {
+            if (block.equals(Terrain.MUD)) {
+                damage += 1;
+            } else if (block.equals(Terrain.OIL_SPILL)) {
+                damage += 1;
+            } else if (block.equals(Terrain.WALL)) {
+                damage += 2;
+            } else {
+                damage += 0;
+            }
+        }
+        return damage;
+    }
+
+    private int countScoreDecrement(List<Object> blocksInFront) {
+        int scoreMinus = 0;
+        for (Object block : blocksInFront) {
+            if (block.equals(Terrain.MUD)) {
+                scoreMinus += 3;
+            } else if (block.equals(Terrain.OIL_SPILL)) {
+                scoreMinus += 4;
+            } else {
+                scoreMinus += 0;
+            }
+        }
+        return scoreMinus;
+    }
+
+    private int countGetPowerUps(List<Object> blocksInFront) {
+        int powerUp = 0;
+        for (Object block : blocksInFront) {
+            if (block.equals(Terrain.BOOST)) {
+                powerUp += 10;
+            } else if (block.equals(Terrain.OIL_POWER)) {
+                powerUp += 2;
+            } else if (block.equals(Terrain.TWEET)) {
+                powerUp += 2;
+            } else if (block.equals(Terrain.LIZARD)) {
+                powerUp += 5;
+            } else if (block.equals(Terrain.EMP)) {
+                powerUp += 10;
+            } else {
+                powerUp += 0;
+            }
+        }
+        return powerUp;
+    }
+
+    private Position checkBestPosition() {
+        int speed;
+        int damage;
+        int score;
+        int powerups;
+        // BELOM DIBUAT CORNER CASENYA
+        List<Object> blocksInFront = getBlocksInFront(myCar.position.lane, myCar.position.block);
+        List<Object> blocksInLeft = getBlocksInFront(myCar.position.lane - 1, myCar.position.block);
+        List<Object> blocksInRight = getBlocksInFront(myCar.position.lane + 1, myCar.position.block);
     }
 
     private Boolean hasPowerUp(PowerUps powerUpToCheck, PowerUps[] available) {
@@ -153,7 +289,6 @@ public class Bot {
         }
         return false;
     }
-
 
     private List<Object> getBlocksInFront(int lane, int block) {
         List<Lane[]> map = gameState.lanes;
@@ -170,155 +305,6 @@ public class Bot {
 
         }
         return blocks;
-    }
-
-    private int getPreviousSpeedState(int currSpeed, int decreaseState){
-        int minimum = 0;
-        int state_1 = 3;
-        int initial = 5;
-        int state_2 = 6;
-        int state_3 = 8;
-        int max = 9; 
-        int boost = 15;
-
-        int[] carSpeed = {minimum,state_1,initial,state_2,state_3,max,boost};
-        if (currSpeed == minimum){
-            return carSpeed[0];
-        }else if (currSpeed == state_1){
-            if (1-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[2-decreaseState];
-            }
-        }else if (currSpeed== initial){
-            if (2-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[2-decreaseState];
-            }
-        }else if (currSpeed == state_2){
-            if (2-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[3-decreaseState];
-            }
-        }else if (currSpeed== state_3){
-            if (2-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[4-decreaseState];
-            }
-        }else if (currSpeed == max){
-            if (2-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[5-decreaseState];
-            }
-        }else if (currSpeed== boost){
-            if (2-decreaseState<=0){
-                return carSpeed[0];
-            }else{
-                return carSpeed[6-decreaseState];
-            }
-        }
-        return myCar.speed;
-    }
-
-    private int countSpeedDecreament(List<Object> blocksInFront){
-        int speedMinus = 0;
-        int mud = 0;
-        int oil_spill = 0;
-        int wall = 0;
-        int currSpeed = myCar.speed;
-        for (Object block : blocksInFront){
-            if (block.equals(Terrain.MUD)){
-                mud += 1;
-            }
-            else if (block.equals(Terrain.OIL_SPILL)){
-                oil_spill += 1;
-            }
-            else if (block.equals(Terrain.WALL)){
-                wall+=1;
-            }
-            else{
-                speedMinus +=0;
-            }
-        }
-        if (wall>0){
-            speedMinus += wall*(myCar.speed-3);
-            currSpeed = 3;
-        }
-        speedMinus += (currSpeed - getPreviousSpeedState(currSpeed, oil_spill+mud));
-        return speedMinus;
-    }
-
-    private int countDamageIncreament(List<Object> blocksInFront){
-        int damage = 0;
-        for (Object block : blocksInFront){
-            if (block.equals(Terrain.MUD)){
-                damage+=1;
-            }else if (block.equals(Terrain.OIL_SPILL)){
-                damage+=1;
-            }else if (block.equals(Terrain.WALL)){
-                damage+=2;
-            }else {
-                damage+=0;
-            }
-        }
-        return damage;
-    }
-
-    private int countScoreDecreament(List<Object> blocksInFront){
-        int scoreMinus = 0; 
-        for (Object block : blocksInFront){
-            if (block.equals(Terrain.MUD)){
-                scoreMinus+=3;
-            }else if (block.equals(Terrain.OIL_SPILL)){
-                scoreMinus+=4;
-            }else {
-                scoreMinus+=0;
-            }
-        }
-        return scoreMinus;
-    }
-
-    private int countGetPowerUps(List<Object> blocksInFront){
-        int powerUp = 0;
-        for (Object block : blocksInFront){
-            if (block.equals(Terrain.BOOST)){
-                powerUp+=10;
-            }else if (block.equals(Terrain.OIL_POWER)){
-                powerUp+=2;
-            }else if (block.equals(Terrain.TWEET)){
-                powerUp+=2;
-            }else if (block.equals(Terrain.LIZARD)){
-                powerUp+=5;
-            }else if (block.equals(Terrain.EMP)){
-                powerUp+=10;
-            }else{
-                powerUp+=0;
-            }
-        }
-        return powerUp;
-    }
-
-    private Position checkBestPosition(){
-        int speed;
-        int damage;
-        int score; 
-        int powerups;
-        // BELOM DIBUAT CORNER CASENYA
-        List<Object> blocksInFront = getBlocksInFront(myCar.position.lane, myCar.position.block);
-        List<Object> blocksInLeft = getBlocksInFront(myCar.position.lane-1,myCar.position.block);
-        List<Object> blocksInRight = getBlocksInFront(myCar.position.lane+1, myCar.position.block);
-
-
-
-
-        
-
-        
-
     }
 
 }
