@@ -54,12 +54,12 @@ USE_BOOST       :
 [X]        - kalo 200 blocks trkhr or 50 round terakhir, auto pake sampe abis (SPAM BOOST) setiap dia state + 1 DAN HARUS GADA TEMBOK
 USE_OIL         :
 [X]     - pastiin musuh di blkng kita
-[X]         - kalo di lane 1 ato 4,
-[X]             - kalo di lane 2 atau 3, tanem
-[X]             - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4),
-        - [Not Feasible] cek di kanan kiri WALL ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
-        - [Not Feasible] cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
-        - [Not Feasible] sebelum loncatin obstacle pake lizard, taro oil
+[X]     - kalo di lane 1 ato 4,
+[X]     - kalo di lane 2 atau 3, tanem
+[X]     - pake 2 oil kalo ada di lane 1(taro di 1,2) atau 4 (taro di 3,4),
+[NF]    - cek di kanan kiri WALL ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+[NF]    - cek di kanan kiri MUD ada mud/wall/truck ga, kalo gada BELOK DULU baru taro
+[NF]    - sebelum loncatin obstacle pake lizard, taro oil
 USE_TWEET  _ _  :
     PLAN UTAMA:  (FIX)
     - check speed musuh kalo pas max langsung cyber truck ??
@@ -70,16 +70,16 @@ USE_TWEET  _ _  :
     - musuh di blkng kt
     - taro di sebelah dinding dam gada mud 
 USE_LIZARD      : 
-    - ada truck
-    - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD    
-    - dia lg max speed, tapi di depannya ada >=3 mud+oil 
-    - dia ada kemungkinan buat state speed-3 dri state speed sekarang, cek use boost dulu baru kalo gada use lizard
-    - kalo dia ada chance sampe speednya jadi 
-    - PIKIRIN PAKE LIZARD KALO ADA MUD YANG ngestack di 1 lane
+[NF]    - ada truck
+[X]     - dia lg max speed, tapi di dpannya ada wall langsung USE_LIZARD
+[X]     - dia lg max speed, tapi di depannya ada >=3 mud+oil
+[X]     - dia ada kemungkinan buat state speed-3 dri state speed sekarang, cek use boost dulu baru kalo gada use lizard
+[?]     - kalo dia ada chance sampe speednya jadi
+[?]     - PIKIRIN PAKE LIZARD KALO ADA MUD YANG ngestack di 1 lane
 USE_EMP         : 
-    - Kalo selane, pake 
+[X]     - Kalo selane, pake
 FIX             : 
-    - damage >= 5 MUST
+[X]     - damage >= 5 MUST
 
 ----------------------------- MOVEMENT -----------------------------
 !!!!!!!!!!!!! HARUS ING ET CEK kalo DI LANE 1, 4 DIA GABOLEH KE KIRI/KANAN (+++BIKIN FUNGSI TAMBAHAN ISCORNER())!!!!!!!!!!!!!

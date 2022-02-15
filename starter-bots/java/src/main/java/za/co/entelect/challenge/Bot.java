@@ -77,28 +77,16 @@ public class Bot {
         return new AccelerateCommand();
     }
 
-    private boolean isWallInFront() {
-        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
-    }
-
-    // private boolean isOilInFrontDiagonal(){
-    //     // return (myCar.position.lane  == Position.Terrain.MUD AND ) OR myCar.position.lane == Position.Terrain.MUD
-    // }
-
-    // private boolean isMudInFrontDiagonal(){
-
-    // }
-
-    // private boolean isTruckInFrontDiagonal(){
-
-    // }
-
     private boolean isOpponentOnTheSameLane() {
         return myCar.position.lane == opponent.position.lane;
     }
 
     private boolean isOpponentInFront() {
         return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(opponent);
+    }
+
+    private boolean isWallInFront() {
+        return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
     }
 
     private int countMudInFront() {
@@ -155,7 +143,7 @@ public class Bot {
     private boolean shouldCarUseLizard() {
         if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
             if (myCar.speed == 15) {
-                return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL) || countMudInFront() >= 3;
+                return isWallInFront() || countMudInFront() >= 3;
             }
         }
         return false;
