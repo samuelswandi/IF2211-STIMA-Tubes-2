@@ -1,5 +1,6 @@
 package za.co.entelect.challenge;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
 import za.co.entelect.challenge.enums.PowerUps;
@@ -42,8 +43,9 @@ public class Bot {
             return EMP;
         }
 
-        if (shouldCarUseBoost(gameState, myCar)) {
-            return BOOST;
+        Map<Boolean, Command> commands = shouldCarUseBoost(gameState, myCar);
+        if (commands.get(true) != null) {
+            return commands.get(true);
         }
 
          if (shouldCarUseOil(gameState, myCar)) {
@@ -84,20 +86,31 @@ public class Bot {
         return count;
     }
 
-    private boolean shouldCarUseBoost(GameState gameState, Car myCar) {
+    private Map<Boolean,Command> shouldCarUseBoost(GameState gameState, Car myCar) {
+        Map<Boolean, Command> commands = new HashMap<>();
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
-            if (!myCar.boosting && !isWallInFrontOf(gameState, myCar)) {
-                if (gameState.maxRounds - gameState.currentRound <= 50) {
-                    return true;
-                }
-                if (countMudInFrontOf(gameState, myCar) <= 3) {
-                    return true;
+            if (myCar.speed == 9 && !isWallInFrontOf(gameState, myCar)) {
+                if (myCar.damage == 1) {
+                    commands.put(true, FIX);
+                    return commands;
                 }
 
-                return myCar.speed <= 3;
+                if (gameState.maxRounds - gameState.currentRound <= 50) {
+                    commands.put(true, BOOST);
+                    return commands;
+                }
+                if (countMudInFrontOf(gameState, myCar) <= 3) {
+                    commands.put(true, BOOST);
+                    return commands;
+                }
+                if (myCar.speed <= 3) {
+                    commands.put(true, BOOST);
+                    return commands;
+                }
             }
         }
-        return false;
+        commands.put(false, null);
+        return commands;
     }
 
     private boolean shouldCarUseOil(GameState gameState, Car myCar) {
@@ -127,6 +140,8 @@ public class Bot {
     private boolean shouldCarUseLizard(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
             if (myCar.speed == 15) {
+                return isWallInFrontOf(gameState, myCar) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.OIL_SPILL) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.MUD);
+            } else {
                 return isWallInFrontOf(gameState, myCar) || countMudInFrontOf(gameState, myCar) >= 3;
             }
         }
