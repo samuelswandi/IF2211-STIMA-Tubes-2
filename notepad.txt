@@ -62,7 +62,7 @@ USE_OIL         :
         - [Not Feasible] sebelum loncatin obstacle pake lizard, taro oil
 USE_TWEET  _ _  :
     PLAN UTAMA:  (FIX)
-    - check speed musuh kalo pas max langsung cyber truck
+    - check speed musuh kalo pas max langsung cyber truck ??
     PLAN A:
     - musuh di blkng kt
     - taro di depan dinding dan gada mud

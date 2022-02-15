@@ -65,6 +65,10 @@ public class Bot {
 //            return new TweetCommand();
 //        }
 
+        if (shouldCarUseLizard()) {
+            return LIZARD;
+        }
+
 
         if (blocks.contains(Terrain.MUD)) {
             int i = random.nextInt(directionList.size());
@@ -124,11 +128,6 @@ public class Bot {
         return false;
     }
 
-
-    private boolean shouldCarUseEMP() {
-        return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
-    }
-
     private boolean shouldCarUseOil() {
         if (hasPowerUp(PowerUps.OIL, myCar.powerups) && !isOpponentInFront()) {
             if (isOpponentOnTheSameLane()) {
@@ -151,6 +150,19 @@ public class Bot {
             return opponent.speed == 15;
         }
         return false;
+    }
+
+    private boolean shouldCarUseLizard() {
+        if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
+            if (myCar.speed == 15) {
+                return getBlocksInFront(myCar.position.lane, myCar.position.block).contains(Terrain.WALL) || countMudInFront() >= 3;
+            }
+        }
+        return false;
+    }
+
+    private boolean shouldCarUseEMP() {
+        return hasPowerUp(PowerUps.EMP, myCar.powerups) && isOpponentOnTheSameLane();
     }
 
     private int getPreviousSpeedState(int currSpeed, int decreaseState) {
