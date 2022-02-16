@@ -13,7 +13,6 @@ import static java.lang.Math.pow;
 
 public class Bot {
 
-    private static final int maxSpeed = 9;
     private final static Command ACCELERATE = new AccelerateCommand();
     private final static Command LIZARD = new LizardCommand();
     private final static Command OIL = new OilCommand();
@@ -29,20 +28,24 @@ public class Bot {
         Car opponent = gameState.opponent;
         List<Object> blocks = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block);
 
-        // jika damage dari car lebih dari 3 maka akan FIX
+        // jika damage dari car lebih dari 2 dan tidak ada wall, mud, dan oil spill, maka akan return FIX
         if (myCar.damage >= 2 && !blocks.contains(Terrain.WALL) && !blocks.contains(Terrain.MUD) && !blocks.contains(Terrain.OIL_SPILL)) {
             return FIX;
         }
 
+        // jika damage lebih dari 4, maka akan return FIX
         if (myCar.damage >= 4) {
             return FIX;
         }
 
+        // jika speed dari mobil adalah 0, maka akan return ACCELERATE
         if (myCar.speed == 0) {
             return ACCELERATE;
         }
 
+        // mengambil lane yang paling menguntungkan
         int lane = checkBestPosition(gameState, myCar);
+
         // pindah ke lane yang paling menguntungkan
         if (lane != myCar.position.lane) {
             return new ChangeLaneCommand(lane - myCar.position.lane);
@@ -68,7 +71,6 @@ public class Bot {
         if (shouldCarUseTweet(gameState, myCar)) {
             return new TweetCommand(opponent.position.lane, opponent.position.block + opponent.speed + 2);
         }
-
 
         if (shouldCarUseOil(gameState, myCar)) {
             return OIL;
@@ -163,9 +165,10 @@ public class Bot {
     private boolean shouldCarUseLizard(GameState gameState, Car myCar) {
         List<Object> blocks = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block-1);
         List<Object> nextBlocks = blocks.subList(0,1);
+        boolean cyberTruckInFront = getCyberTruckInFront(gameState, myCar.position.lane, myCar.position.block);
         if (hasPowerUp(PowerUps.LIZARD, myCar.powerups)) {
             if (myCar.speed == 15) {
-                return isWallInFrontOf(gameState, myCar) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.OIL_SPILL) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.MUD);
+                return isWallInFrontOf(gameState, myCar) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.OIL_SPILL) || getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.MUD) || cyberTruckInFront;
             } else {
                 if (nextBlocks.contains(Terrain.WALL)) {
                     return false;
@@ -329,7 +332,7 @@ public class Bot {
     }
 
     private int checkBestPosition(GameState gameState, Car myCar) {
-        String[] priorities = {"damage", "speed", "score", "powerups"};
+        String[] priorities = {"speed", "damage", "score", "powerups"};
         List<Object> blocksInFront = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block);
 
         for (Object priority : priorities) {
@@ -415,7 +418,7 @@ public class Bot {
                     }
                 }
             }
-            if (priority.equals("score")) {
+            if (priority.equals("powerups")) {
                 int front = countGetPowerUps(blocksInFront);
                 if (myCar.position.lane == 2 || myCar.position.lane == 3) {
                     List<Object> blocksInLeft = getBlocksInFront(gameState, myCar.position.lane - 1, myCar.position.block - 1);
@@ -456,7 +459,7 @@ public class Bot {
                     }
                 }
             }
-            if (priority.equals("powerups")) {
+            if (priority.equals("score")) {
                 int front = countScoreDecrement(blocksInFront);
                 if (myCar.position.lane == 2 || myCar.position.lane == 3) {
                     List<Object> blocksInLeft = getBlocksInFront(gameState, myCar.position.lane - 1, myCar.position.block - 1);
@@ -481,7 +484,7 @@ public class Bot {
                     List<Object> blocksInRight = getBlocksInFront(gameState, myCar.position.lane + 1, myCar.position.block - 1);
                     int right = countScoreDecrement(blocksInRight);
 
-                    if (right > front) {
+                    if (right < front) {
                         return myCar.position.lane + 1;
                     } else {
                         return myCar.position.lane;
@@ -490,7 +493,7 @@ public class Bot {
                     List<Object> blocksInLeft = getBlocksInFront(gameState, myCar.position.lane - 1, myCar.position.block - 1);
                     int left = countScoreDecrement(blocksInLeft);
 
-                    if (left > front) {
+                    if (left < front) {
                         return myCar.position.lane - 1;
                     } else {
                         return myCar.position.lane;
