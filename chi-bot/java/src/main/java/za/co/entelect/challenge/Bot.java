@@ -13,8 +13,6 @@ import static java.lang.Math.max;
 public class Bot {
 
     private static final int maxSpeed = 9;
-    private List<Command> directionList = new ArrayList<>();
-
     private final static Command ACCELERATE = new AccelerateCommand();
     private final static Command LIZARD = new LizardCommand();
     private final static Command OIL = new OilCommand();
@@ -22,23 +20,19 @@ public class Bot {
     private final static Command EMP = new EmpCommand();
     private final static Command FIX = new FixCommand();
 
-    private final static Command TURN_RIGHT = new ChangeLaneCommand(1);
-    private final static Command TURN_LEFT = new ChangeLaneCommand(-1);
+    public Bot() {}
 
-
-    public Bot() {
-        directionList.add(TURN_LEFT);
-        directionList.add(TURN_RIGHT);
-    }
 
     public Command run(GameState gameState) {
         Car myCar = gameState.player;
         Car opponent = gameState.opponent;
 
+        // jika damage dari car lebih dari 3 maka akan FIX
         if (myCar.damage >= 3) {
             return FIX;
         }
 
+        // jika sedang menggunakan boost maka akan dilihat lane mana yang paling menguntungkan agar boost terus berjalan
         if (myCar.boosting) {
             int lane = checkBestPosition(gameState, myCar);
             if (lane != myCar.position.lane) {
@@ -46,23 +40,28 @@ public class Bot {
             }
         }
 
+        // menggunakan EMP jika sesuai syarat
         if (shouldCarUseEMP(gameState, myCar)) {
             return EMP;
         }
 
+        // menggunakan EMP jika sesuai syarat
         Map<Boolean, Command> commands = shouldCarUseBoost(gameState, myCar);
         if (commands.get(true) != null) {
             return commands.get(true);
         }
 
+        // menggunakan TWEET jika sesuai syarat
         if (shouldCarUseTweet(gameState, myCar)) {
             return new TweetCommand(opponent.position.lane, opponent.position.block + opponent.speed);
         }
 
+        // menggunakan LIZARD jika sesuai syarat
         if (shouldCarUseLizard(gameState, myCar)) {
             return LIZARD;
         }
 
+        // pindah ke lane yang paling menguntungkan
         int lane = checkBestPosition(gameState, myCar);
         if (lane != myCar.position.lane) {
             return new ChangeLaneCommand(lane - myCar.position.lane);
@@ -76,18 +75,22 @@ public class Bot {
         return ACCELERATE;
     }
 
+    // cek apakah lawan berada di lane yang sama untuk penggunaan EMP
     private boolean isOpponentOnTheSameLane(GameState gameState, Car myCar) {
         return myCar.position.lane == gameState.opponent.position.lane;
     }
 
+    // cek apakah posisi lawan berada di depan kita 
     private boolean isOpponentInFront(GameState gameState, Car myCar) {
         return getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(gameState.opponent);
     }
 
+    // cek apakah ada dinding di depan sejauh current speed dari car
     private boolean isWallInFrontOf(GameState gameState, Car myCar) {
         return getBlocksInFront(gameState, myCar.position.lane, myCar.position.block).contains(Terrain.WALL);
     }
 
+    // menghitung berapa banyak mud yang ada di depan
     private int countMudInFrontOf(GameState gameState, Car myCar) {
         int count = 0;
         List<Object> blocks = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block);
@@ -99,9 +102,11 @@ public class Bot {
         return count;
     }
 
+    // logic dari penggunaan boost 
     private Map<Boolean, Command> shouldCarUseBoost(GameState gameState, Car myCar) {
         Map<Boolean, Command> commands = new HashMap<>();
         if (hasPowerUp(PowerUps.BOOST, myCar.powerups)) {
+            // jika max speed dan tidak ada wall
             if (myCar.speed == 9 && !isWallInFrontOf(gameState, myCar)) {
                 if (myCar.damage == 1) {
                     commands.put(true, FIX);
