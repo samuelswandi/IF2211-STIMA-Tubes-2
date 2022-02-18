@@ -61,6 +61,4 @@ Make run (pada linux)
 13520132 - Januar Budi Ghifari
 ```
 ## Video Tugas Besar
-```
 [Click Here To Watch The Video On Youtube!](https://youtu.be/gFN7ywix5uk)
-```
