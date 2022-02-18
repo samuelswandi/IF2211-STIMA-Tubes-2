@@ -297,3 +297,77 @@ ALGORITMA
     
     return false
 
+
+function shouldCarUseSpeedBoost(GameState gameState, Car myCar) -> boolean
+{ function untuk menentukan apakah bot akan menggunakan command SPEED_BOOST atau tidak }
+
+ALGORTIMA
+    { mengecek apakah myCar memiliki SPEED_BOOST POWERUP }
+    if (hasPowerUp(SPEED_BOOST, myCar.powerups)) then
+
+        { untuk instant boost }
+        { jika speed lebih dari 3, dan tidak ada wall di depan mobil }
+        { fungsi isWallInFrontOf(myCar) juga mengecek apakah ada cybertruck di depan car }
+        { maka akan menggunakan SPEED_BOOST }
+        if (myCar.speed >= 3 && !isWallInFrontOf(myCar) then
+
+            { jika damage car lebih dari 2 }
+            { maka akan return FIX }
+            { karena jika tidak, maka akan boost sampai maksimal 9 speed }
+            if (myCar.damage >= 2) then
+                return FIX
+
+            { jika mud di depan car lebih dari 3 }
+            { maka akan return FIX }
+            { karena jika tidak, maka akan boost lalu akan berkurang maximal speednya menjadi 8 }
+            if (countMudInFrontOf(myCar) <= 3) then
+                return BOOST
+
+            return BOOST
+
+    return NOTHING
+    
+    return false
+
+
+
+function shouldCarUseTweet(GameState gameState, Car myCar) -> boolean
+{ function untuk menentukan apakah bot akan menggunakan command TWEET atau tidak }
+
+ALGORITMA
+    { mengecek apakah myCar memiliki TWEET POWERUP }
+    { dan apakah tidak ada wall dan mud yang lebih banyak dari 3 di depan car }
+    { untuk menghindari adanya tabrakan selagi menggunakan TWEET }
+    if (hasPowerUp(TWEET, myCar) && !isWallInFrontOf(myCar) && countMudInFrontOf(myCar) <= 3) then
+
+        { menggunakan TWEET berdasarkan kecepatan musuh }
+        { jika kecepatan musuh lebih dari 8, maka akan menggunakan TWEET }
+        return opponent.speed >= 8
+    return false
+
+function shouldCarUseOil(GameState gameState, Car myCar) -> boolean
+{ function untuk menentukan apakah bot akan menggunakan command OIL atau tidak }
+
+ALGORITMA 
+    { mengecek apakah myCar memiliki OIL POWERUP }
+    { dan apakah tidak ada wall dan mud yang lebih banyak dari 3 di depan car }
+    { untuk menghindari adanya tabrakan selagi menggunakan OIL }
+    if (hasPowerUp(OIL, myCar) then
+        
+        { mengecek apakah opponent di lane yang sama dan di depan tidak ada wall }
+        if (isOpponentOnTheSameLane(gameState, myCar) && !isWallInFrontOf(myCar) then
+            if (myCar.lane == 1) then
+                { Mengecek sebelah kanan dari lane myCar }
+                blocksInRight <- blocksInFrontOf(myCar.right.lane)
+
+                { Return true jika di sebelah kanan terdapat oil_spill, mud, wall, maupun cybertruck }
+                return blocksInRight.contains(OIL_SPILL) || blocksInRight.contains(MUD) || blocksInRight.contains(WALL))
+        
+            if (myCar.lane == 4) then
+                { Mengecek sebelah kiri dari lane myCar }
+                blocksInLeft <- blocksInFrontOf(myCar.left.lane)
+
+                { Return true jika di sebelah kanan terdapat oil_spill, mud, wall, maupun cybertruck }
+                return blocksInLeft.contains(OIL_SPILL) || blocksInLeft.contains(MUD) || blocksInLeft.contains(WALL) 
+
+    return false
