@@ -137,7 +137,8 @@ public class Bot {
         commands.put(false, null);
         return commands;
     }
-
+    
+    // logic dari penggunaan oil
     private boolean shouldCarUseOil(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.OIL, myCar.powerups)) {
             if (isOpponentOnTheSameLane(gameState, myCar)) {
@@ -155,6 +156,7 @@ public class Bot {
         return false;
     }
 
+    // logic dari penggunaan tweet
     private boolean shouldCarUseTweet(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.TWEET, myCar.powerups) && !isWallInFrontOf(gameState, myCar) && countMudInFrontOf(gameState, myCar) <= 3) {
             return gameState.opponent.speed >= 9;
@@ -162,6 +164,7 @@ public class Bot {
         return false;
     }
 
+    // logic dari penggunaan lizard
     private boolean shouldCarUseLizard(GameState gameState, Car myCar) {
         List<Object> blocks = getBlocksInFront(gameState, myCar.position.lane, myCar.position.block-1);
         List<Object> nextBlocks = blocks.subList(0,1);
@@ -180,6 +183,7 @@ public class Bot {
         return false;
     }
 
+    // logic dari penggunaan cyber truck
     private boolean shouldCarUseEMP(GameState gameState, Car myCar) {
         if (hasPowerUp(PowerUps.EMP, myCar.powerups) && !isWallInFrontOf(gameState, myCar)) {
             return gameState.opponent.speed >= 9;
@@ -187,6 +191,7 @@ public class Bot {
         return false;
     }
 
+    // function untuk mereturn speed state sesuai dengan banyak penurunan state
     private int getPreviousSpeedState(Car myCar, int currSpeed, int decreaseState) {
         int minimum = 0;
         int state_1 = 3;
@@ -239,6 +244,7 @@ public class Bot {
         return myCar.speed;
     }
 
+    // function untuk menghitung banyakny pengurangan speed dari car
     private int countSpeedDecrement(GameState gameState, Car myCar, List<Object> blocksInFront) {
         int speedMinus = 0;
         int mud = 0;
@@ -274,6 +280,7 @@ public class Bot {
         return speedMinus;
     }
 
+    // function untuk menghitung banyaknya damage
     private int countDamageDecrement(GameState gameState, List<Object> blocksInFront) {
         int damage = 0;
         boolean isCyberTruckInFront = getCyberTruckInFront(gameState, gameState.player.position.lane, gameState.player.position.block);
@@ -297,6 +304,7 @@ public class Bot {
         return damage;
     }
 
+    // function untuk menghitung pengurangan score
     private int countScoreDecrement(List<Object> blocksInFront) {
         int scoreMinus = 0;
         for (Object block : blocksInFront) {
@@ -311,6 +319,7 @@ public class Bot {
         return scoreMinus;
     }
 
+    //
     private int countGetPowerUps(List<Object> blocksInFront) {
         int powerUp = 0;
         for (Object block : blocksInFront) {
